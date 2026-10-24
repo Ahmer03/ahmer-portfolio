@@ -1,0 +1,41 @@
+name: Check Portfolio
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    name: Check code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fail if merge conflict markers are left in files
+        run: |
+          if grep -rnE '^(<<<<<<< |>>>>>>> )' --include=*.html --include=*.css --include=*.js .; then
+            echo "Merge conflict markers found."
+            exit 1
+          fi
+
+      - name: Fail if .env is tracked by Git
+        run: |
+          if git ls-files | grep -E '(^|/)\.env$'; then
+            echo ".env is tracked by Git."
+            exit 1
+          fi
+
+      - name: Check JavaScript syntax
+        run: node --check script.js
+
+      - name: Check CSS syntax
+        run: npx --yes stylelint@16 styles.css
+
+      - name: Validate HTML
+        run: npx --yes html-validate@8 index.html
