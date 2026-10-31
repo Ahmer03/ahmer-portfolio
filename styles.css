@@ -273,8 +273,8 @@ section{ padding:88px 0; border-top:1px solid var(--border); }
 section h2{ font-size:clamp(1.5rem, 2.6vw, 2rem); font-weight:700; margin-bottom:32px; max-width:38ch; }
 
 /* ---------- reveal-on-scroll ---------- */
-.reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
-.reveal.in-view{ opacity:1; transform:translateY(0); }
+.js .reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+.js .reveal.in-view{ opacity:1; transform:translateY(0); }
 
 /* ---------- about ---------- */
 .about-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:48px; align-items:start; }
@@ -537,4 +537,16 @@ footer{
   .contact-grid{ grid-template-columns:1fr; }
   .hero-socials{ flex-direction:column; gap:12px; }
   .fab{ padding:11px 18px; font-size:0.8rem; }
+}
+
+/* Project and education layout refinements */
+.cs-body .chip-row { margin-top: 18px; }
+.edu-grid .edu-card { min-height: 118px; }
+@media (max-width: 600px) {
+  .avatar { width: 92px; height: 92px; }
+  section { padding: 64px 0; }
+  .tl-content { padding: 22px 20px; }
+  .cx-row { align-items: flex-start; flex-wrap: wrap; }
+  .cx-note { width: 100%; padding-left: 106px; }
+  .stat-label { line-height: 1.35; }
 }
