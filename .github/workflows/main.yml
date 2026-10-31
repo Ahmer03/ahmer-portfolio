@@ -1,13 +1,28 @@
+
 name: Check Portfolio
 
 on:
   push:
     branches: [main]
 
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
-    name: Check code
+    name: Check Portfolio Code
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,14 +32,17 @@ jobs:
         with:
           node-version: 20
 
-      - name: Fail if merge conflict markers are left in files
+      - name: Check merge conflict markers
         run: |
-          if grep -rnE '^(<<<<<<< |>>>>>>> )' --include=*.html --include=*.css --include=*.js .; then
+          if grep -rnE '^(<<<<<<< |>>>>>>> )' \
+            --include='*.html' \
+            --include='*.css' \
+            --include='*.js' .; then
             echo "Merge conflict markers found."
             exit 1
           fi
 
-      - name: Fail if .env is tracked by Git
+      - name: Check tracked .env files
         run: |
           if git ls-files | grep -E '(^|/)\.env$'; then
             echo ".env is tracked by Git."
@@ -34,8 +52,16 @@ jobs:
       - name: Check JavaScript syntax
         run: node --check script.js
 
-      - name: Check CSS syntax
+      - name: Check CSS
         run: npx --yes stylelint@16 styles.css
 
       - name: Validate HTML
         run: npx --yes html-validate@8 index.html
+
+      - name: Check broken links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress './**/*.html'
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
